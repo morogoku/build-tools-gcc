@@ -562,9 +562,15 @@ function setup_env() {
     elif [[ ${VERSION} -eq 9 ]]; then
         # GNU GCC 9: error: ‘PATH_MAX' was not declared on this scope
         GCC_PATCH="GCC_9"
+    elif [[ ${VERSION} -eq 10 ]]; then
+        # GNU GCC 10: error: ‘PATH_MAX' was not declared on this scope
+        GCC_PATCH="GCC_10"
     else
-        # GNU GCC 10 (any): error: ‘PATH_MAX' was not declared on this scope
-        GCC_PATCH="GCC_10_up"
+        # GNU GCC 11 (any): error: ‘PATH_MAX' was not declared on this scope
+        #                   error: internal compiler error: in lra_set_insn_recog_data, at lra.c
+        # revert commit 6b3034e: lra: Canonicalize mult to shift in address reloads
+        # revert commit 2f8ae30: aarch64: Remove redundant mult patterns
+        GCC_PATCH="GCC_11_up"
     fi
 
     patch -Np1 < "${ROOT}"/patches/${GCC_PATCH}.patch || die "Failed to patch GCC source!"
